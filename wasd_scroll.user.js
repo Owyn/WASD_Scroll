@@ -2,7 +2,7 @@
 // @name          WASD Scroll hotkeys for websites
 // @namespace     wasd_scroll
 // @author        Owyn
-// @version       1.1
+// @version       1.2
 // @description   Use WASD keys to scroll, not just arrow buttons
 // @updateURL     https://github.com/Owyn/WASD_Scroll/raw/master/WASD_Scroll.user.js
 // @downloadURL   https://github.com/Owyn/WASD_Scroll/raw/master/WASD_Scroll.user.js
@@ -38,10 +38,16 @@ if (typeof KeyEvent === "undefined")
 		DOM_VK_S: 83,
 		DOM_VK_W: 87,
         DOM_VK_SPACE: 32,
+		DOM_VK_PAGE_UP: 33,
+		DOM_VK_PAGE_DOWN: 34,
+        DOM_VK_END: 35,
+        DOM_VK_HOME: 36,
+		DOM_VK_UP: 38,
+		DOM_VK_DOWN: 40,
 	};
 }
 
-var inputs = ['input', 'select', 'button', 'textarea'];
+var inputs = ['input', 'select', 'button', 'textarea', 'shreddit-composer'];
 
 function onkeydown (b)
 {
@@ -82,23 +88,58 @@ function onkeydown (b)
 		});
             if(aggro) b.stopImmediatePropagation();
 		break;
+	case KeyEvent.DOM_VK_UP:
+		if(!aggro) return;
 	case KeyEvent.DOM_VK_W:
 		whatWeScroll.scrollBy({
 			top: by * -1,
 			left: 0,
 			behavior: scroll_speed
 		});
-            if(aggro) b.stopImmediatePropagation();
+            if(aggro) {b.preventDefault(); b.stopImmediatePropagation();}
 		break;
+	case KeyEvent.DOM_VK_DOWN:
+		if(!aggro) return;
 	case KeyEvent.DOM_VK_S:
 		whatWeScroll.scrollBy({
 			top: by,
 			left: 0,
 			behavior: scroll_speed
 		});
-            if(aggro) b.stopImmediatePropagation();
+            if(aggro) {b.preventDefault(); b.stopImmediatePropagation();}
+		break;
+	case KeyEvent.DOM_VK_PAGE_UP:
+		if(!aggro) return;
+		whatWeScroll.scrollBy({
+			top: window.innerHeight * space_scroll_by * -1,
+			left: 0,
+			behavior: scroll_speed
+		});
+        b.preventDefault();
+        b.stopImmediatePropagation();
+		break;
+    case KeyEvent.DOM_VK_HOME:
+        if(!aggro) return;
+		whatWeScroll.scrollTo({
+			top: 0,
+			left: 0,
+			behavior: "instant"
+		});
+        b.preventDefault();
+        b.stopImmediatePropagation();
+		break;
+    case KeyEvent.DOM_VK_END:
+        if(!aggro) return;
+		whatWeScroll.scrollTo({
+			top: Number.MAX_SAFE_INTEGER,
+			left: 0,
+			behavior: "instant"
+		});
+        b.preventDefault();
+        b.stopImmediatePropagation();
 		break;
     case KeyEvent.DOM_VK_SPACE:
+	case KeyEvent.DOM_VK_PAGE_DOWN:
         if(!aggro) return;
 		whatWeScroll.scrollBy({
 			top: window.innerHeight * space_scroll_by * (b.shiftKey ? -1 : 1),
@@ -132,6 +173,6 @@ function wasd_toggle()
     else
     {
         localStorage.setItem('WASD_AGGR', "1");
-        alert("ON - now WASD scrolling will try to scroll EVERY element on the page and block origianl WASD-site hotkeys (if present), and own spacebar scroll will be added as well, this is remembered per-site (via cookies LocalStorage)");
+        alert("ON - now WASD scrolling will try to scroll EVERY element on the page and block origianl WASD-site hotkeys (if present), and own spacebar/arrows/pgup/pgdown/home/end scroll will be added as well, this is remembered per-site (via cookies LocalStorage)");
     }
 }
